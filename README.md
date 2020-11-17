@@ -17,7 +17,7 @@ Descargar Conector e Instalarlo en AnypointStudio
 ## Instalar SB1 Microservice
 
 
-=== Descargar Docker Composer
+### Descargar Docker Composer
 
 Crear una carpeta en el disco y descargar los siguientes archivos.
 
