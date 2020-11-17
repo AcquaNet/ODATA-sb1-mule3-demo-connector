@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:sb1atina="http://www.mulesoft.org/schema/mule/sb1atina" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/sb1atina http://www.mulesoft.org/schema/mule/sb1atina/current/mule-sb1atina.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd">
+    <sb1atina:config name="SB1__Configuration" protocol="HTTPS" port="443" server="a3f90c25e41e.ngrok.io" path="b1s/v2" company="CORP_DEV2" user="manager" password="Mendoza01#" microServiceName="192.168.99.100" microServicePort="8085" doc:name="SB1: Configuration"/>
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration"/>
+    <flow name="sb1-demo-connectorFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/sb1" doc:name="HTTP"/>
+        <set-variable variableName="transaction" value="#[1]" doc:name="Variable"/>
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+{
+	"Transaction ID": flowVars.transaction,
+	values: {
+		Code: 'UN01',
+		Name: 'UN01'
+	}
+}]]></dw:set-payload>
+        </dw:transform-message>
+        <sb1atina:invoke-addon-operation config-ref="SB1__Configuration" entityType="Operation 01" doc:name="SB1"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+    </flow>
+</mule>
