@@ -22,6 +22,7 @@ Descargar Conector e Instalarlo en AnypointStudio
 Crear una carpeta en el disco y descargar los siguientes archivos.
 
 [.env](https://github.com/AcquaNet/SB1Docker/blob/master/ODATADockerDistribution/.env).
+
 [.docker-compose](https://github.com/AcquaNet/SB1Docker/blob/master/ODATADockerDistribution/docker-compose.yml).
 
 
