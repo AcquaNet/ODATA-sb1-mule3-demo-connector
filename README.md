@@ -1,9 +1,4 @@
 # SB1 Connector
-:keywords: add_keywords_separated_by_commas
-:imagesdir: images
-:toc: macro
-:toclevels: 2
-
 
 
 ## Instalar SB1 Connector
