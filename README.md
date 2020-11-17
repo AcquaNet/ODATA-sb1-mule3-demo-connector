@@ -1,4 +1,4 @@
-= SB1 Connector
+# SB1 Connector
 :keywords: add_keywords_separated_by_commas
 :imagesdir: images
 :toc: macro
@@ -6,7 +6,7 @@
 
 
 
-== Instalar SB1 Connector
+## Instalar SB1 Connector
 
 
 Descargar Conector e Instalarlo en AnypointStudio
@@ -14,7 +14,7 @@ Descargar Conector e Instalarlo en AnypointStudio
 [Download latest SB1 Mule 3 Connector from Repository unpkg.com](http://157.245.236.175:8081/artifactory/libs-release/com/atina/SB1Mule3Connector/1.0.0/SB1Mule3Connector-1.0.0.zip).
 
 
-== Instalar SB1 Microservice
+## Instalar SB1 Microservice
 
 
 === Descargar Docker Composer
@@ -25,7 +25,7 @@ Crear una carpeta en el disco y descargar los siguientes archivos.
 [.docker-compose](https://github.com/AcquaNet/SB1Docker/blob/master/ODATADockerDistribution/docker-compose.yml).
 
 
-=== Ejecutar Docker
+### Ejecutar Docker
 
 Desde la carperta que se creo en el punto anterior ejecutar el siguiente comnando
 

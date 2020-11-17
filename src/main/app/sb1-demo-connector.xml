@@ -26,7 +26,7 @@ http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee
 	}
 }]]></dw:set-payload>
         </dw:transform-message>
-        <sb1atina:invoke-addon-operation config-ref="SB1__Configuration" entityType="Operation 01" doc:name="SB1"/>
+
         <json:object-to-json-transformer doc:name="Object to JSON"/>
     </flow>
 </mule>
