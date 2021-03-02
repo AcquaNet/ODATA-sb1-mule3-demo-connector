@@ -36,7 +36,7 @@ docker-compose start
 Verificar que este corriendo correctamente
 
 ```bash
-docker logs sb1-atina-microserver
+docker logs odata-atina-microserver
 ```
 
 Debe mostrar que el servicio este funcionando correctamente:
