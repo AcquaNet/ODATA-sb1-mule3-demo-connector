@@ -25,6 +25,12 @@
 				<extensions>true</extensions>
 				<configuration>
                     <copyToAppsDirectory>true</copyToAppsDirectory>
+                    <inclusions>
+						<inclusion>
+							<groupId>org.mule.modules</groupId>
+							<artifactId>mule-module-requester</artifactId>
+						</inclusion> 
+                    </inclusions>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -135,7 +141,7 @@
             <artifactId>sb1-connector</artifactId>
             <version>1.0.0</version>
         </dependency>
- 
+ 	
     <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-http</artifactId>
@@ -148,7 +154,23 @@
             <version>${mule.version}</version>
             <scope>provided</scope>
         </dependency>
+        		<dependency>
+			<groupId>com.atina</groupId>
+			<artifactId>ConvertPDFToJSONGRPCShader</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-module-requester</artifactId>
+			<version>1.6</version>
+		</dependency>
     </dependencies>
  
-
+	<repositories>
+        <repository>
+            <id>AcquaNet-central</id>
+            <name>jfrog-releases</name>
+            <url>http://157.245.236.175:8081/artifactory/libs-release-local</url>
+        </repository>
+    </repositories>
 </project>

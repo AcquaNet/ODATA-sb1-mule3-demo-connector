@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:sb1atina="http://www.mulesoft.org/schema/mule/sb1atina" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:spring="http://www.springframework.org/schema/beans" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
+	xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:sb1atina="http://www.mulesoft.org/schema/mule/sb1atina"
+	xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
@@ -10,36 +12,113 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/sb1atina http://www.mulesoft.org/schema/mule/sb1atina/current/mule-sb1atina.xsd
 http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
-    <sb1atina:config name="SB1__ConfigurationCloud" protocol="HTTPS" port="443" server="0e355b71b983.ngrok.io" path="b1s/v2" company="CORP_DEV2" user="manager" password="Mendoza01#" microServiceName="192.168.99.100" microServicePort="8060" doc:name="SB1: Configuration"/>
-    <sb1atina:config name="SB1__ConfigurationLocal" protocol="HTTPS" port="443" server="0e355b71b983.ngrok.io" path="b1s/v2" company="CORP_DEV2" user="manager" password="Mendoza01#" microServiceName="localhost" microServicePort="8085" doc:name="SB1: Configuration"/>
-    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration"/>
-    <flow name="sb1-demo-connector-generic-user-flow">
-        <http:listener config-ref="HTTP_Listener_Configuration" path="/sb1-generic" doc:name="HTTP"/>
+	
+	<sb1atina:config name="SB1__ConfigurationCloud"
+		protocol="HTTPS" port="443" server="0e355b71b983.ngrok.io" path="b1s/v2"
+		company="CORP_DEV2" user="manager" password="Mendoza01#"
+		microServiceName="192.168.99.100" microServicePort="8060"
+		doc:name="SB1: Configuration" />
+	
+	<sb1atina:config name="SB1__ConfigurationLocal"
+		protocol="HTTPS" port="443" server="0e355b71b983.ngrok.io" path="b1s/v2"
+		company="CORP_DEV2" user="manager" password="Mendoza01#"
+		microServiceName="localhost" microServicePort="8085" doc:name="SB1: Configuration" />
+		
+	<sb1atina:config name="SB1__ConfigurationDigitalOcean"
+		protocol="HTTPS" port="443" server="0e355b71b983.ngrok.io" path="b1s/v2"
+		company="CORP_DEV2" user="manager" password="Mendoza01#"
+		microServiceName="104.236.226.175" microServicePort="8060" doc:name="SB1: Configuration" />
+	
+	<http:listener-config name="HTTP_Listener_Configuration"
+		host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration" />
+
+	<flow name="sb1-demo-connector-generic-user-flow">
+		<http:listener config-ref="HTTP_Listener_Configuration"
+			path="/op6" doc:name="HTTP" />
+		<set-variable variableName="transaction" value="#[1]"
+			doc:name="Variable" />
+		<dw:transform-message doc:name="Transform Message">
+			<dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+{
+	"Transaction ID": 10000,
+	DecimalData: {
+		Currency: "USD",
+		Value: 1.5
+	}
+}
+]]></dw:set-payload>
+		</dw:transform-message>
+        <sb1atina:invoke-addon-operation config-ref="SB1__ConfigurationDigitalOcean" entityType="Operation 06" doc:name="SB1 Operation 06"/>
+
+
+		<json:object-to-json-transformer
+			doc:name="Object to JSON" />
+	</flow>
+    <flow name="sb1-demo-connector-transform-flow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/transform" doc:name="HTTP"/>
         <set-variable variableName="transaction" value="#[1]" doc:name="Variable"/>
+        <enricher target="#[flowVars.transform]" doc:name="Message Enricher - Read Transform">
+            <processor-chain doc:name="Processor Chain">
+                <set-variable variableName="dsFileName" value="templateBase.ds" doc:name="Variable - Set DS File Name"/>
+                <flow-ref name="sb1-read-file-transform-flow" doc:name="sb1-read-file-transform-flow"/>
+            </processor-chain>
+        </enricher>
         <dw:transform-message doc:name="Transform Message">
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
 {
-	 
+	"Transaction ID": 10000,
+	DecimalData: {
+		Currency: "USD",
+		Value: 1.5
+	}
 }
 ]]></dw:set-payload>
         </dw:transform-message>
-        <sb1atina:invoke-entity-operation config-ref="SB1__ConfigurationCloud" entityType="UnitOfMeasurementGroups - GET-ENTRIES" doc:name="SB1 Get UnitOfMeasurementGroups"/>
-
-
-
-
-
-
+        <sb1atina:invoke-addon-operation config-ref="SB1__ConfigurationDigitalOcean" entityType="Operation 06" doc:name="SB1 Get UnitOfMeasurementGroups"/>      
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <custom-transformer mimeType="application/json"
+			class="com.acqua.transformers.ConvertJSONUsingExternalTransform"
+			doc:name="Java - ConvertJSONUsingExternalTransform" />
+		<json:json-to-object-transformer
+			returnClass="java.util.HashMap" doc:name="JSON to Object" />
         <json:object-to-json-transformer doc:name="Object to JSON"/>
     </flow>
-    
-    <flow name="sb1-demo-connector-generic-authorization-flow">
-        <http:listener config-ref="HTTP_Listener_Configuration" path="/sb1-auth" doc:name="HTTP"/>
-        <set-variable variableName="transaction" value="#[1]" doc:name="Variable"/>
-        <dw:transform-message doc:name="Transform Message">
-            <dw:set-payload><![CDATA[%dw 1.0
+
+	<flow name="sb1-demo-connector-generic-user-get-flow">
+		<http:listener config-ref="HTTP_Listener_Configuration"
+			path="/sb1-get-um" doc:name="HTTP" />
+		<set-variable variableName="transaction" value="#[1]"
+			doc:name="Variable" />
+		<dw:transform-message doc:name="Transform Message">
+			<dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+{
+	"Transaction ID": 100 as :number,
+	keyValues: {
+		AbsEntry: -1
+	}
+}
+]]></dw:set-payload>
+		</dw:transform-message>
+        <sb1atina:invoke-addon-operation config-ref="SB1__ConfigurationLocal" entityType="SapB1 Factura de Compra" doc:name="SB1 Get UnitOfMeasurementGroups"/>
+
+
+		<json:object-to-json-transformer
+			doc:name="Object to JSON" />
+	</flow>
+	
+	<flow name="sb1-demo-connector-generic-authorization-flow">
+		<http:listener config-ref="HTTP_Listener_Configuration"
+			path="/sb1-auth" doc:name="HTTP" />
+		<set-variable variableName="transaction" value="#[1]"
+			doc:name="Variable" />
+		<dw:transform-message doc:name="Transform Message">
+			<dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
 {
@@ -54,11 +133,12 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 	"Transaction ID": 100 as :number
 }
 ]]></dw:set-payload>
-        </dw:transform-message>
-        <sb1atina:authenticate config-ref="SB1__ConfigurationCloud" entityType="FromUserData" doc:name="SB1 Login Using User and Password"/>
+		</dw:transform-message>
+		<sb1atina:authenticate config-ref="SB1__ConfigurationCloud"
+			entityType="FromUserData" doc:name="SB1 Login Using User and Password" />
 
-        <dw:transform-message doc:name="Transform Message">
-            <dw:set-payload><![CDATA[%dw 1.0
+		<dw:transform-message doc:name="Transform Message">
+			<dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
 {
@@ -69,21 +149,26 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 	"Transaction ID": 100 as :number
 }
 ]]></dw:set-payload>
-        </dw:transform-message>
-        <sb1atina:invoke-entity-operation config-ref="SB1__ConfigurationCloud" entityType="UnitOfMeasurementGroups - GET-ENTRIES" doc:name="SB1 Get UnitOfMeasurementGroups"/>
-        
+		</dw:transform-message>
+		<sb1atina:invoke-entity-operation
+			config-ref="SB1__ConfigurationCloud" entityType="UnitOfMeasurementGroups - GET-ENTRIES"
+			doc:name="SB1 Get UnitOfMeasurementGroups" />
 
 
 
 
-        <json:object-to-json-transformer doc:name="Object to JSON"/>
-    </flow>
-    
-    <flow name="sb1-demo-connector-token-flow">
-        <http:listener config-ref="HTTP_Listener_Configuration" path="/sb1-token" doc:name="HTTP"/>
-        <set-variable variableName="transaction" value="#[1]" doc:name="Variable"/>
-        <dw:transform-message doc:name="Transform Message">
-            <dw:set-payload><![CDATA[%dw 1.0
+
+		<json:object-to-json-transformer
+			doc:name="Object to JSON" />
+	</flow>
+
+	<flow name="sb1-demo-connector-token-flow">
+		<http:listener config-ref="HTTP_Listener_Configuration"
+			path="/sb1-token" doc:name="HTTP" />
+		<set-variable variableName="transaction" value="#[1]"
+			doc:name="Variable" />
+		<dw:transform-message doc:name="Transform Message">
+			<dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
 {
@@ -91,11 +176,12 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 	"Transaction ID": 100 as :number
 }
 ]]></dw:set-payload>
-        </dw:transform-message>
-        <sb1atina:authenticate config-ref="SB1__ConfigurationCloud" entityType="FromTokenData" doc:name="SB1 Login Using Token"/>
+		</dw:transform-message>
+		<sb1atina:authenticate config-ref="SB1__ConfigurationCloud"
+			entityType="FromTokenData" doc:name="SB1 Login Using Token" />
 
-        <dw:transform-message doc:name="Transform Message">
-            <dw:set-payload><![CDATA[%dw 1.0
+		<dw:transform-message doc:name="Transform Message">
+			<dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
 {
@@ -105,14 +191,17 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 	}
 }
 ]]></dw:set-payload>
-        </dw:transform-message>
-        <sb1atina:invoke-entity-operation config-ref="SB1__ConfigurationCloud" entityType="UnitOfMeasurementGroups - GET-ENTRIES" doc:name="SB1 Get UnitOfMeasurementGroups"/>
-        
+		</dw:transform-message>
+		<sb1atina:invoke-entity-operation
+			config-ref="SB1__ConfigurationCloud" entityType="UnitOfMeasurementGroups - GET-ENTRIES"
+			doc:name="SB1 Get UnitOfMeasurementGroups" />
 
 
 
 
-        <json:object-to-json-transformer doc:name="Object to JSON"/>
-    </flow>
-    
+
+		<json:object-to-json-transformer
+			doc:name="Object to JSON" />
+	</flow>
+
 </mule>
