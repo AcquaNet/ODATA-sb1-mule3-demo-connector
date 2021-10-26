@@ -58,6 +58,22 @@ Debe mostrar que el servicio este funcionando correctamente:
 ```
 
 
+Adicionales
+
+Se puede consultar el proceso de instalacion con el siguiente comando
+
+```bash
+docker exec -it  odata-atina-microserver cat /tmp/start.log
+```
+
+Listar logs generados
+
+```bash
+docker exec -it  odata-atina-microserver ls -l /tmp/odata/ODATAConnectorServerLog
+```
+
+
+
 
 
 
